@@ -1,3 +1,4 @@
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Cipher {
@@ -14,21 +15,27 @@ public class Cipher {
             System.out.println("Enter a Message:");
             EncryptedMessage = input.nextLine();
 
-            System.out.println("Enter the number of rotation");
-            rotation = input.nextInt();
-            input.nextLine();
+            try {
 
-            System.out.println("EncryptedMessage :"+EncryptedMessage);
+                System.out.println("Enter the number of rotation"); //here we can get exception
+                rotation = input.nextInt();
+                input.nextLine();
+                System.out.println("EncryptedMessage :"+EncryptedMessage);
+                decryption(EncryptedMessage,rotation);
 
-            decryption(EncryptedMessage,rotation);
+                System.out.println("do you want  to enter another message t/f");
+                userChoice=input.nextLine();
 
-            System.out.println("do you want  to enter another message t/f");
-            userChoice=input.nextLine();
+                if(userChoice.equalsIgnoreCase("t")){
+                    askAgain=true;
+                }else{
+                    askAgain=false;
+                }
 
-            if(userChoice.equalsIgnoreCase("t")){
+            }catch (InputMismatchException mx){
+                System.out.println("Invalid input.....you should enter a number");
+                input.nextLine();
                 askAgain=true;
-            }else{
-                askAgain=false;
             }
         }while(askAgain);
     }
@@ -39,29 +46,35 @@ public class Cipher {
 
         for (int i = 0; i < EncryptedMessage.length(); i++) {
 
-            int position = EncryptedMessage.charAt(i) ;   //convert char to ascii value
+            try {
+                int position = EncryptedMessage.charAt(i);   //convert char to ascii value
 
-            if ((position>='A'&& position <='Z')||(position>='a'&&position<='z')) {
+                if ((position >= 'A' && position <= 'Z') || (position >= 'a' && position <= 'z')) {
 
-                int originalPosition=position+rotation;  // to see original position >z or not
+                    int originalPosition = position + rotation;  // to see original position >z or not
 
-                if (originalPosition>'Z' && position>='A'&&position<='Z') {
+                    if (originalPosition > 'Z' && position >= 'A' && position <= 'Z') {
 
-                    position = 64 - ('Z' - EncryptedMessage.charAt(i));
+                        position = 64- ('Z' - EncryptedMessage.charAt(i));
 
-                } else if (originalPosition>'z') {
+                    } else if (originalPosition > 'z') {
 
-                    position = 96 - ('z' - EncryptedMessage.charAt(i));
+                        position = 96 - ('z' - EncryptedMessage.charAt(i));
 
+                    }
+                    char ch = (char) (position + rotation);       //convert ascii value to char
+                    decryptedMessage = decryptedMessage + ch;   //append char to string
+
+                } else {
+                    char ch = (char) position;
+                    decryptedMessage = decryptedMessage + ch;
                 }
-                char ch = (char) (position + rotation);       //convert ascii value to char
-                decryptedMessage = decryptedMessage + ch;   //append char to string
-            }else{
-                char ch=(char)position;
-                decryptedMessage=decryptedMessage+ch;
+            }catch (IndexOutOfBoundsException io){
+                System.out.println(io);
+            }catch (ArithmeticException ae){
+                System.out.println(ae);
             }
         }
-
         System.out.println("DecryptedMessage :"+decryptedMessage);
     }
 }
